@@ -1,0 +1,48 @@
+{
+  "id": "confluence",
+  "name": "Confluence",
+  "description": "Main-agent-only Confluence Cloud browser, mirror, search, and editor.",
+  "uiHints": {
+    "baseUrl": {
+      "label": "Confluence Base URL",
+      "help": "Confluence Cloud site root, for example https://xindong.atlassian.net/wiki"
+    },
+    "email": {
+      "label": "Confluence Email",
+      "sensitive": true
+    },
+    "apiToken": {
+      "label": "Confluence API Token",
+      "sensitive": true
+    },
+    "defaultSpaceKey": {
+      "label": "Default Space Key",
+      "help": "Optional default Confluence space key for create/read operations."
+    },
+    "cacheDir": {
+      "label": "Cache Dir",
+      "help": "Relative path under the main workspace where the local mirror is stored."
+    }
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "baseUrl": {
+        "type": "string"
+      },
+      "email": {
+        "type": "string"
+      },
+      "apiToken": {
+        "type": "string"
+      },
+      "defaultSpaceKey": {
+        "type": "string"
+      },
+      "cacheDir": {
+        "type": "string"
+      }
+    }
+  }
+}

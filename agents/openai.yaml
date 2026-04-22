@@ -1,0 +1,15 @@
+interface:
+  display_name: "XD Confluence"
+  short_description: "Install and use company Confluence safely"
+  default_prompt: "Use $xd-confluence to connect company Confluence, verify access, or safely work with internal wiki pages."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "atlassian-rovo"
+      description: "Atlassian Rovo MCP server for company Confluence"
+      transport: "streamable_http"
+      url: "https://mcp.atlassian.com/v1/mcp"
+
+policy:
+  allow_implicit_invocation: true

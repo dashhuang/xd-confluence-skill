@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "atlassian-rovo": {
+      "type": "http",
+      "url": "https://mcp.atlassian.com/v1/mcp",
+      "note": "Project-level config for the official Atlassian Rovo MCP server. Prefer OAuth. If your org later standardizes API-token auth, add headers only in local user overrides and never commit secrets."
+    }
+  }
+}
