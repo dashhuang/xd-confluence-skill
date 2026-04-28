@@ -6,7 +6,14 @@
 
 - skill + Atlassian Rovo MCP
 
-也就是说，普通同事不需要先理解这个 extension。
+也就是说，普通同事不需要先理解这个 extension。即使使用 OpenClaw，也优先尝试 Rovo MCP + OAuth。
+
+这个 extension 不是默认接入路径。它是 fallback / advanced path：
+
+- 当前 OpenClaw runtime 确认无法使用 remote HTTP MCP
+- 运行环境确实无法完成 OAuth
+- 用户明确需要本地 mirror / cache
+- 用户明确需要 section 级写入增强
 
 ## 这个增强层提供什么
 
@@ -24,6 +31,7 @@
 只有在下面场景才建议：
 
 - 你明确在用 OpenClaw
+- Rovo MCP + OAuth 当前不可用，或你确实需要 REST API 能力
 - 你需要本地 mirror / cache
 - 你需要 section 级写入增强
 - 你接受这条路径走 Confluence REST + API token，而不是默认的 Rovo MCP/OAuth
@@ -37,6 +45,8 @@
 - `apiToken`
 - `defaultSpaceKey`
 - `cacheDir`
+
+API token 比 OAuth 更敏感。只放在用户本地环境变量、secret store 或部署配置里，不要写进 repo、聊天记录、截图或公开文档。
 
 ## 重要区别
 

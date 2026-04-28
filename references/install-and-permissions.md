@@ -33,6 +33,8 @@
 
 ## 步骤 2：确认 MCP 是否可见
 
+默认优先走 Atlassian Rovo MCP + OAuth。不要因为当前第一次调用失败就直接切到 API token。
+
 先检查客户端是否已经看得到预期的 Confluence 工具。
 
 预期工具至少包括这些之一：
@@ -58,23 +60,31 @@
 }
 ```
 
-## 步骤 3：优先走 OAuth
+如果客户端或 runtime 明确不支持 remote HTTP / streamable HTTP MCP：
 
-默认优先级：
+- 先建议升级或开启兼容的 Rovo MCP 配置
+- 不要把 API token 当成普通默认路径
+- 只有在用户确认当前环境短期无法支持 Rovo MCP，或者公司明确要求 API token 时，才考虑 REST API fallback
 
-1. OAuth
-2. API token
+## 步骤 3：显式触发 OAuth
+
+MCP 工具出现不代表 OAuth 链接一定会自动弹出。很多客户端只有在 agent 显式调用认证工具或登录命令时，才会返回授权链接。
 
 如果用户还没认证：
 
-- 先指导用户按客户端提示完成 Atlassian OAuth
+- 先让 agent 显式触发 Atlassian Rovo MCP 的认证 / login 流程
+- 如果客户端暴露了 `authenticate` 类 MCP 工具，优先调用它
+- 如果客户端提供 CLI 登录命令，按该客户端方式登录，例如 `mcp login atlassian-rovo`
 - 明确提醒用户使用公司 Atlassian 账号，而不是个人账号
+- 如果浏览器授权后跳到 `localhost` callback 报错，按客户端提示把完整 callback URL 交回 agent 继续完成认证
 - OAuth 完成后，再回到 `getConfluenceSpaces`
 
-如果用户明确说公司统一走 API token：
+如果用户明确说公司统一走 API token，或当前 runtime 确认无法支持 Rovo MCP：
 
-- 指导用户只在自己的本地 override 层加 `Authorization` header
+- 说明这是 fallback，不是默认路径
+- 指导用户只在自己的本地环境变量、secret store 或部署配置里保存 token
 - 不要让用户把 token 写回 repo
+- 不要在聊天、截图、文档或 GitHub issue 里贴完整 token
 
 ## 步骤 4：用 `getConfluenceSpaces` 做最小自检
 

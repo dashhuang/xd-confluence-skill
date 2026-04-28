@@ -2,6 +2,12 @@
 
 This repository root is itself the `xd-confluence` skill package.
 
+## Default path
+
+Prefer Atlassian Rovo MCP + OAuth for OpenClaw as well.
+
+Do not switch to Confluence REST API + API token just because the user is using OpenClaw. REST/API token is a fallback for cases where the current OpenClaw runtime cannot load remote HTTP MCP, the environment cannot complete OAuth, or the user explicitly enables the advanced REST extension.
+
 ## Option 1: Use this repository as the workspace
 
 If OpenClaw is pointed at this repository as its workspace, no extra skill copy is required. The repo root `.mcp.json` gives the default Atlassian Rovo MCP endpoint.
@@ -35,6 +41,8 @@ openclaw mcp set atlassian-rovo '{"url":"https://mcp.atlassian.com/v1/mcp","tran
 ```
 
 Or rely on the repo root [.mcp.json](../../.mcp.json) if your OpenClaw setup already consumes project-level MCP config.
+
+If an older OpenClaw runtime reports that only stdio MCP servers are supported, first try upgrading OpenClaw or enabling a compatible remote MCP path. Treat REST/API token as a fallback, not the normal setup path.
 
 ## Optional advanced layer
 
