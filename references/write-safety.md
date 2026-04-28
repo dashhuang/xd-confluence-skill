@@ -55,6 +55,32 @@ Default to these behaviors:
 - draft in chat over direct publish when the write is high-risk
 - preserve unknown macros, embeds, and structured blocks when possible
 
+## Delete and archive requests
+
+The user may personally have permission to delete or archive a Confluence page, but this skill does not perform destructive page operations by default.
+
+When the user asks to delete, remove, archive, clean up, hide, or deprecate a page:
+
+1. acknowledge that the user may have permission to do it in Confluence
+2. explain that the skill itself does not execute deletion or archive by default because it is destructive
+3. if the user provided a page URL or ID, read the page and verify:
+   - exact page title
+   - space
+   - URL
+   - whether it appears to be shared, canonical, or policy-like
+   - whether it may have children
+   - whether there is a replacement page
+4. offer safer alternatives:
+   - add a clear deprecation notice at the top
+   - link to the replacement page
+   - add labels such as `deprecated` or `needs-review`
+   - draft a short manual deletion or archive checklist
+   - draft a request for a space admin or page owner
+5. if the user still wants deletion, guide them to do the final delete/archive action manually in Confluence
+
+Never imply the user lacks permission just because the skill does not delete pages.
+Never claim a page was deleted, archived, hidden, or removed unless the action was actually performed by a supported tool.
+
 ## Do not do these without explicit user intent
 
 - delete or archive pages

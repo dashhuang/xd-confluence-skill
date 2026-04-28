@@ -218,6 +218,18 @@ setup mode 的目标不是解释概念，而是把用户带到真正可用。
 - 做了什么改动
 - 有没有保留待确认事项
 
+### 4. 删除 / 归档请求
+
+用户本人可能有权限在 Confluence 里删除或归档页面，但这份 skill 默认不代执行删除、归档、移动到回收站或永久清除。
+
+当用户说“删除”“移除”“归档”“清理掉”“不要了”这类请求时：
+
+- 不要暗示用户没有权限；只说明 skill 不代做破坏性操作
+- 如果用户给了页面 URL 或 page ID，先只读核对页面标题、space、URL、是否像共享/规范页面、是否可能有子页面、是否有替代页
+- 给出更柔和的处理方案，例如添加“已废弃”说明、链接到替代页面、加 `deprecated` / `needs-review` 标签、整理给 space admin 的手动删除/归档清单
+- 如果用户仍坚持删除，给出手动检查清单，让用户自己在 Confluence UI 里执行最终删除/归档
+- 不要声称页面已删除、已归档、已隐藏或已移除，除非底层工具真的支持且操作已经完成
+
 写入安全和冲突处理可参考 [references/write-safety.md](references/write-safety.md)。
 
 页面格式或宏处理可参考 [references/content-format.md](references/content-format.md)。
