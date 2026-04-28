@@ -82,7 +82,6 @@ if tomllib is not None:
 readme = (repo / "README.md").read_text()
 for needle in [
     "https://mcp.atlassian.com/v1/mcp",
-    "scripts/install-skill.sh",
     "installable skill repo",
     "INSTALL_WITH_AGENT.md",
     "tests/smoke/prompts.md",

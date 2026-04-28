@@ -1,133 +1,96 @@
-# XD Confluence Skill V2
+# XD Confluence Skill
 
-这是一个面向心动内部的 Confluence skill 发布仓库。
+这是一个给 AI agent 使用的心动 Confluence skill。它的目标很简单：让 agent 能一步一步帮你接上公司 Confluence，并在之后按安全流程搜索、读取、整理或更新内部文档。
 
-现在这个仓库本身就是 installable skill repo。也就是说，对支持 GitHub skill 安装的 agent，**repo 根目录 URL 就应该是安装入口**。
+这个仓库本身就是一个 installable skill repo；支持 GitHub skill 安装的 agent 应该直接安装 repo 根目录。
 
-默认能力路径：
+## 最推荐用法
 
-- skill
-- Atlassian 官方 Rovo MCP
-- OAuth
-
-可选高级增强层：
-
-- OpenClaw extension
-- Confluence REST API
-- 本地 mirror / cache / section 级写入
-
-## 这是什么
-
-这是一个 **skill-first** 的内部工具包，不是一个以 plugin 为核心的仓库。
-
-默认给同事交付的是：
-
-- 一个可安装的 skill
-- 一套安装与权限排查引导
-- 一套可复制给 agent 的安装提示
-
-只有 OpenClaw 高级用户，才需要进入 `extras/openclaw-extension/` 这条增强路径。
-
-## 仓库结构
+不要手动读完整个仓库。直接把下面这段复制黏贴给你的 agent：
 
 ```text
-.
-├── SKILL.md
-├── .mcp.json
-├── agents/
-├── references/
-├── AGENTS.md
-├── INSTALL_WITH_AGENT.md
-├── adapters/
-├── extras/
-│   └── openclaw-extension/
-├── scripts/
-└── tests/
+打开 https://github.com/dashhuang/xd-confluence-skill。
+把这个仓库根目录安装成本地 skill：xd-confluence。
+如果还没配置 Atlassian Rovo MCP，就帮我配置。
+然后按 AGENTS.md 和 references/install-and-permissions.md 一步一步带我接入公司 Confluence。
+不要跳过权限检查。
+最后用 getConfluenceSpaces 做一次只读自检。
 ```
 
-## 默认工作方式
+## Agent 会做什么
 
-同事的理想使用流程是：
+正常流程应该是：
 
-1. 把这个 GitHub 仓库 URL 交给自己的 agent
-2. agent 将 repo 根目录安装为 `xd-confluence`
-3. agent 读取 `AGENTS.md` 和 `references/install-and-permissions.md`
-4. agent 一步一步带同事完成：
-   - skill 安装
-   - Rovo MCP 接入
-   - Atlassian OAuth 登录
-   - Confluence 访问权限确认
-   - 首次只读 smoke test
-5. 在读路径通过前，不进入正式写路径
+1. 安装这个 repo 根目录作为 `xd-confluence` skill
+2. 确认 Atlassian Rovo MCP 已配置到 `https://mcp.atlassian.com/v1/mcp`
+3. 引导你用公司 Atlassian 账号完成 OAuth
+4. 调用 `getConfluenceSpaces` 做只读自检
+5. 确认你至少能看到一个公司 Confluence space
+6. 之后才进入搜索、阅读、总结或写文档流程
 
-## 快速分发
+在第 5 步之前，agent 不应该说“已经接好了”。
 
-### 给 agent 的最直接说法
+## 兼容不同 Agent
 
-把仓库 URL 给 agent，再配合 [INSTALL_WITH_AGENT.md](./INSTALL_WITH_AGENT.md) 里的提示词使用。
+你给 agent 的提示词尽量保持上面那一段就够了。不同 agent 的安装细节放在仓库内部处理：
 
-最通用的一句是：
+- `AGENTS.md`：通用 agent 安装指引
+- `adapters/codex/`：Codex 相关说明
+- `adapters/claude/`：Claude Code 相关说明
+- `adapters/openclaw/`：OpenClaw 相关说明
 
-```text
-Open <repo-url>. Install this repository root as the xd-confluence skill, then guide me step by step through company Confluence setup. Use AGENTS.md and references/install-and-permissions.md.
+如果 agent 需要特殊路径或命令，让它自己读取对应 adapter。
+
+## 这个 Skill 适合做什么
+
+- 接入公司 Confluence
+- 排查 OAuth、MCP、产品权限、space 权限问题
+- 搜索并读取公司内部页面
+- 根据已有页面整理总结、对比方案、起草材料
+- 在目标页面明确时，新建或更新 Confluence 页面
+
+写入页面前，agent 应该先读取当前页面、确认目标位置，并避免误改正式规范或多人共用页面。
+
+## 默认接入方式
+
+默认走 Atlassian 官方 Rovo MCP：
+
+```json
+{
+  "mcpServers": {
+    "atlassian-rovo": {
+      "type": "http",
+      "url": "https://mcp.atlassian.com/v1/mcp"
+    }
+  }
+}
 ```
 
-### 本地手工安装
+默认优先 OAuth。不要把 API token、OAuth token、cookie 或其他凭证写进这个 repo。
 
-```bash
-./scripts/install-skill.sh --target-dir "${CODEX_HOME:-$HOME/.codex}/skills"
-./scripts/install-skill.sh --target-dir "$HOME/.claude/skills"
-./scripts/install-skill.sh --target-dir "$HOME/.agents/skills"
-```
+## OpenClaw 高级增强
 
-本机可直接跑：
+普通使用不需要看这一层。
 
-```bash
-./scripts/setup-local-clients.sh
-```
+`extras/openclaw-extension/` 是可选增强，提供：
 
-## MCP 入口
+- Confluence REST API 访问
+- 本地 mirror/cache
+- section 级写入辅助
 
-repo 根目录自带项目级 [.mcp.json](./.mcp.json)，指向：
+只有当你明确需要 OpenClaw、本地镜像或更强写入能力时再启用。mirror/cache 可能包含公司内部文档正文，默认已经在 `.gitignore` 中忽略相关生成文件。
 
-- `https://mcp.atlassian.com/v1/mcp`
+## 关键文件
 
-默认建议：
+- `SKILL.md`：agent 实际读取的 skill 指令
+- `AGENTS.md`：给外部 agent 的安装和接入说明
+- `INSTALL_WITH_AGENT.md`：更多可复制提示词
+- `references/install-and-permissions.md`：安装、OAuth、权限、自检流程
+- `references/admin-checklist.md`：需要管理员介入时的检查项
+- `references/search.md`：搜索和候选页面判断流程
+- `references/write-safety.md`：写入 Confluence 前的安全流程
 
-- 先走 OAuth
-- 不要把 token 写进 repo
-- 如果公司后续统一要求 API token，只在用户本地 override 配置里加 header
-
-## 关键文档
-
-- [SKILL.md](./SKILL.md)
-  真正给 agent 使用的核心 skill
-- [references/install-and-permissions.md](./references/install-and-permissions.md)
-  安装、开通、OAuth、自检与权限排查主流程
-- [references/admin-checklist.md](./references/admin-checklist.md)
-  需要管理员介入时给 agent 的最小检查模板
-- [AGENTS.md](./AGENTS.md)
-  给外部 agent 的 repo 安装说明
-- [INSTALL_WITH_AGENT.md](./INSTALL_WITH_AGENT.md)
-  直接复制给同事的安装提示
-- [extras/openclaw-extension/README.md](./extras/openclaw-extension/README.md)
-  OpenClaw 可选高级增强层说明
-
-## 当前质量标准
-
-V2 的目标不是“能搜到页面”就算完成，而是要满足：
-
-1. 仓库根目录可以作为 skill 分发入口
-2. agent 能一步一步完成安装与开通
-3. 能清楚区分：
-   - MCP 未接入
-   - OAuth 未完成
-   - 无 Confluence 产品权限
-   - 无目标 space 权限
-4. 默认读路径真实可验证
-5. 写路径默认保守，不直接改正式页面
-
-## 验证方式
+## 验证
 
 结构校验：
 
@@ -137,15 +100,5 @@ V2 的目标不是“能搜到页面”就算完成，而是要满足：
 
 手工 smoke test：
 
-- [tests/smoke/prompts.md](./tests/smoke/prompts.md)
-- [tests/smoke/checklist.md](./tests/smoke/checklist.md)
-
-## 发布前检查
-
-发布到 GitHub 前建议确认：
-
-1. repo URL 已替换 README 里的占位符
-2. 安装提示词里的 `<repo-url>` 已有真实示例
-3. 公司管理员或 IT 联系方式是否要补进 `admin-checklist.md`
-4. 至少完成一次真实只读 smoke test
-5. 如果要开放写路径测试，先准备专用测试页或测试 space
+- `tests/smoke/prompts.md`
+- `tests/smoke/checklist.md`
